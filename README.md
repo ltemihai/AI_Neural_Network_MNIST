@@ -1,5 +1,5 @@
-# AI_Neuronal_Network_MNIST
-Neuronal Network for MNIST dataset
+# AI_Neural_Network_MNIST
+Neural Network for MNIST dataset
 
 Here you can find the dataset
 https://we.tl/t-H8c2KjvU2O
