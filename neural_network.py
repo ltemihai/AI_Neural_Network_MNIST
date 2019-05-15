@@ -2,11 +2,11 @@ import numpy as np
 from scipy.stats import truncnorm
 
 
-def ELU(x, alpha=0.01):
+def sigmoid(x, alpha=0.01):
     return 1/(1 + np.exp(-x))
 
 
-def ELU_derivated(x, alpha=0.01):
+def sigmoid_derivated(x, alpha=0.01):
     return x * (1 - x)
 
 
@@ -55,23 +55,22 @@ class NeuralNetwork:
         self.h2_out_weights = np.random.randn(self.hidden_nodes, self.out_nodes.shape[1])
         self.h2_out_bias = np.zeros((1, self.out_nodes.shape[1]))
 
-    # COMPUTES f(X) = (X * w) + B and passes it through activation function, ELU this case
     def feedforward(self, x):
             z1 = np.dot(x, self.in_h1_weights) + self.in_h1_bias
-            self.in_h1_activation = ELU(z1)
+            self.in_h1_activation = sigmoid(z1)
             z2 = np.dot(self.in_h1_activation, self.h1_h2_weights) + self.h1_h2_bias
-            self.h1_h2_activation = ELU(z2)
+            self.h1_h2_activation = sigmoid(z2)
             z3 = np.dot(self.h1_h2_activation, self.h2_out_weights) + self.h2_out_bias
-            self.h2_out_activation = ELU(z3)
+            self.h2_out_activation = sigmoid(z3)
 
 
     def backpropagation(self,x, y, epoch):
 
         delta_h2_out = cross_entropy(self.h2_out_activation, y)
         delta_z2 = np.dot(delta_h2_out, self.h2_out_weights.T)
-        delta_h1_h2 = delta_z2 * ELU_derivated(self.h1_h2_activation)
+        delta_h1_h2 = delta_z2 * sigmoid_derivated(self.h1_h2_activation)
         delta_z1 = np.dot(delta_h1_h2, self.h1_h2_weights.T)
-        delta_in_h1 = delta_z1 * ELU_derivated(self.in_h1_activation)
+        delta_in_h1 = delta_z1 * sigmoid_derivated(self.in_h1_activation)
 
         self.h2_out_weights -= self.learning_rate * np.dot(self.h1_h2_activation.T, delta_h2_out)
         self.h2_out_bias -= self.learning_rate * np.sum(delta_h2_out, axis=0, keepdims=True)

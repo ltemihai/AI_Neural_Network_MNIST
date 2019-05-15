@@ -2,7 +2,7 @@ import numpy as np
 from random import randint
 
 import file_reader
-# import neural_network_keras
+import neural_network_keras
 from neural_network import NeuralNetwork, get_accuracy, error
 
 data_test = file_reader.open_file('mnist_test.csv')
@@ -24,45 +24,45 @@ model = NeuralNetwork(training_data, one_hot_train_labels, 128, 0.5)
 print('Number of Epochs: ')
 epochs = int(input())
 
-for epoch in range(epochs):
-    print('===============================')
-    print(epoch)
-    print('===============================')
-    for x,y in zip(model.in_nodes, model.out_nodes):
-        model.feedforward(x)
-        model.backpropagation(x, y, epoch)
-        loss = error(model.h2_out_activation, y)
-        print('Error: ', loss)
-    print('TRAINING ACCURACY ')
-    print(get_accuracy(test_data, test_labels, model))
+print('1.) Use built from scratch network')
+print('2.) Use keras network')
+option = int(input())
+
+if option == 1:
+    for epoch in range(epochs):
+        print('===============================')
+        print(epoch)
+        print('===============================')
+        for x,y in zip(model.in_nodes, model.out_nodes):
+            model.feedforward(x)
+            model.backpropagation(x, y, epoch)
+            loss = error(model.h2_out_activation, y)
 
 
-for n in range(10):
-    print('Current Value')
-    index = randint(0, 1000)
-    file_reader.open_image(test_data[index])
-    print(data_test[index][0]);
-    value = np.reshape(test_data[index], (1, test_data.shape[1]))
-    predicted_value = model.generate_result(value)
-    print('Predicted Value')
-    print(predicted_value)
+    for n in range(10):
+        print('Current Value')
+        index = randint(0, 1000)
+        file_reader.open_image(test_data[index])
+        print(data_test[index][0])
+        value = np.reshape(test_data[index], (1, test_data.shape[1]))
+        predicted_value = model.generate_result(value)
+        print('Predicted Value')
+        print(predicted_value)
 
+elif option == 2:
+    model = neural_network_keras.generate_model(training_data, one_hot_train_labels)
+    neural_network_keras.view_summary(model)
+    neural_network_keras.train_model(model, training_data, one_hot_train_labels)
 
-# model = neural_network_keras.generate_model(training_data, one_hot_train_labels)
-# neural_network_keras.view_summary(model)
-# neural_network_keras.train_model(model,training_data,one_hot_train_labels)
-#
-# scores = model.evaluate(test_data, one_hot_test_labels)
-# print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
-#
-# print(test_data[6][0])
-#
-# value = np.reshape(test_data[6], (1, test_data.shape[1]))
-#
-# predicted_value = model.predict(value)
-# print('Target Value')
-# print(data_test[6][0])
-# print('Predicted Array')
-# print(predicted_value)
-# print('Predicted Value')
-# print(np.argmax(predicted_value))
+    scores = model.evaluate(test_data, one_hot_test_labels)
+    print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+
+    for n in range(10):
+        print('Current Value')
+        index = randint(0, 1000)
+        file_reader.open_image(test_data[index])
+        print(data_test[index][0])
+        value = np.reshape(test_data[index], (1, test_data.shape[1]))
+        predicted_value = model.predict(value)
+        print('Predicted Value')
+        print(np.argmax(predicted_value))
